@@ -102,6 +102,9 @@
                                     <a href="{{ route('students.create') }}"
                                        class="nav-link {{ (Route::is('students.create')) ? 'active' : '' }}">Admit Student</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('students.admission') }}" class="nav-link {{ Route::is('students.admission') ? 'active' : '' }}">Admissions</a>
+                                </li>
                             @endif
 
                             {{--Student Information--}}

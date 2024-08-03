@@ -50,6 +50,12 @@
 
                             <div class="form-group">
                                 <button type="submit" class="btn btn-primary btn-block">Sign in <i class="icon-circle-right2 ml-2"></i></button>
+                                <form action="{{ route('students.register') }}" method="GET" style="display: inline;">
+                                @csrf
+                                    <button type="submit" class="btn btn-primary btn-block mt-2">
+                                        Register <i class="icon-circle-right2 ml-2"></i>
+                                    </button>
+                                </form>
                             </div>
 
                            {{-- <div class="form-group">
