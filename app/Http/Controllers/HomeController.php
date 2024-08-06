@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Qs;
+use App\Models\StudentRecord;
 use App\Repositories\UserRepo;
 
 class HomeController extends Controller
@@ -12,7 +13,7 @@ class HomeController extends Controller
     {
         $this->user = $user;
     }
-
+    
 
     public function index()
     {
@@ -41,6 +42,9 @@ class HomeController extends Controller
         if(Qs::userIsTeamSAT()){
             $d['users'] = $this->user->getAll();
         }
+
+        // Add admissions count to the data
+        $d['admissionsCount'] = StudentRecord::where('form_completed', 1)->count();
 
         return view('pages.support_team.dashboard', $d);
     }
