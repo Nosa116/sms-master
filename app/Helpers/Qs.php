@@ -152,8 +152,7 @@ class Qs
 
     public static function userIsSuperAdmin()
     {
-    $auth = Auth::user();
-    return $auth ? ($auth->user_type == 'super_admin' ? true : null) : null;
+        return Auth::user()->user_type == 'super_admin';
     }
 
     public static function userIsStudent()
@@ -259,8 +258,7 @@ class Qs
 
     public static function getSetting($type)
     {
-    $setting = Setting::where('type', $type)->first();
-    return $setting ? $setting->description : null;
+        return Setting::where('type', $type)->first()->description;
     }
 
     public static function getCurrentSession()
