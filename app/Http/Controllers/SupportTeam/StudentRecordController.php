@@ -6,6 +6,7 @@ use App\Helpers\Qs;
 use App\Helpers\Mk;
 use App\Http\Requests\Student\StudentRecordCreate;
 use App\Http\Requests\Student\StudentRecordUpdate;
+use App\Models\StudentRecord;
 use App\Repositories\LocationRepo;
 use App\Repositories\MyClassRepo;
 use App\Repositories\StudentRepo;
@@ -22,13 +23,22 @@ class StudentRecordController extends Controller
 
    public function __construct(LocationRepo $loc, MyClassRepo $my_class, UserRepo $user, StudentRepo $student)
    {
-       $this->middleware('teamSA', ['only' => ['edit','update', 'reset_pass', 'create', 'store', 'graduated'] ]);
+       $this->middleware('teamSA', ['only' => ['edit', 'update', 'reset_pass', 'create', 'store', 'graduated'] ]);
        $this->middleware('super_admin', ['only' => ['destroy',] ]);
 
         $this->loc = $loc;
         $this->my_class = $my_class;
         $this->user = $user;
         $this->student = $student;
+   }
+
+   public function register(){
+        $data['my_classes'] = $this->my_class->all();
+        $data['parents'] = $this->user->getUserByType('parent');
+        $data['dorms'] = $this->student->getAllDorms();
+        $data['states'] = $this->loc->getStates();
+        $data['nationals'] = $this->loc->getAllNationals();
+        return view('pages.support_team.students.register', $data);
    }
 
     public function reset_pass($st_id)
@@ -51,13 +61,13 @@ class StudentRecordController extends Controller
 
     public function store(StudentRecordCreate $req)
     {
-       $data =  $req->only(Qs::getUserRecord());
-       $sr =  $req->only(Qs::getStudentData());
-
+        $data =  $req->only(Qs::getUserRecord());
+        $sr =  $req->only(Qs::getStudentData());
+    
         $ct = $this->my_class->findTypeByClass($req->my_class_id)->code;
-       /* $ct = ($ct == 'J') ? 'JSS' : $ct;
+        /* $ct = ($ct == 'J') ? 'JSS' : $ct;
         $ct = ($ct == 'S') ? 'SS' : $ct;*/
-
+    
         $data['user_type'] = 'student';
         $data['name'] = ucwords($req->name);
         $data['code'] = strtoupper(Str::random(10));
@@ -65,7 +75,7 @@ class StudentRecordController extends Controller
         $data['photo'] = Qs::getDefaultUserImage();
         $adm_no = $req->adm_no;
         $data['username'] = strtoupper(Qs::getAppCode().'/'.$ct.'/'.$sr['year_admitted'].'/'.($adm_no ?: mt_rand(1000, 99999)));
-
+    
         if($req->hasFile('photo')) {
             $photo = $req->file('photo');
             $f = Qs::getFileMetaData($photo);
@@ -73,17 +83,18 @@ class StudentRecordController extends Controller
             $f['path'] = $photo->storeAs(Qs::getUploadPath('student').$data['code'], $f['name']);
             $data['photo'] = asset('storage/' . $f['path']);
         }
-
+    
         $user = $this->user->create($data); // Create User
-
+    
         $sr['adm_no'] = $data['username'];
         $sr['user_id'] = $user->id;
         $sr['session'] = Qs::getSetting('current_session');
-
+        $sr['form_completed'] = true;
+    
         $this->student->createRecord($sr); // Create Student
         return Qs::jsonStoreOk();
     }
-
+    
     public function listByClass($class_id)
     {
         $data['my_class'] = $mc = $this->my_class->getMC(['id' => $class_id])->first();
@@ -124,6 +135,33 @@ class StudentRecordController extends Controller
         }
 
         return view('pages.support_team.students.show', $data);
+    }
+
+    // Admission
+    public function admission()
+    {
+        $data['students'] = \App\Models\StudentRecord::where('form_completed', true)->get();
+        return view('pages.support_team.students.admission', $data);
+    }
+
+    public function accept(StudentRecord $studentRecord)
+    {
+    if ($studentRecord) {
+        $studentRecord->form_completed = 0;
+        $studentRecord->save();
+        return redirect()->route('students.admission')->with('flash_success', 'Student admitted successfully.');
+    }
+    return redirect()->route('students.admission')->with('flash_error', 'Student not found.');
+    }
+
+    public function reject(StudentRecord $studentRecord)
+    {
+    if ($studentRecord) {
+        $studentRecord->user()->delete();
+        $studentRecord->delete();
+        return redirect()->route('students.admission')->with('flash_success', 'Student rejected successfully.');
+    }
+    return redirect()->route('students.admission')->with('flash_error', 'Student not found.');
     }
 
     public function edit($sr_id)

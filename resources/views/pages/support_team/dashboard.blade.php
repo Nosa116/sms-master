@@ -63,8 +63,22 @@
                    </div>
                </div>
            </div>
+           <div class="col-sm-6 col-xl-3">
+                <div class="card card-body bg-purple-400 has-bg-image">
+                    <div class="media">
+                        <div class="mr-3 align-self-center">
+                            <i class="icon-user-check icon-3x opacity-75"></i>
+                        </div>
+
+                        <div class="media-body text-right">
+                            <h3 class="mb-0">{{ $admissionsCount }}</h3>
+                            <span class="text-uppercase font-size-xs">Total Admissions</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
        </div>
-       @endif
+    @endif
 
     {{--Events Calendar Begins--}}
     <div class="card">
