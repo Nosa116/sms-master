@@ -6,6 +6,8 @@ Auth::routes();
 Route::get('/privacy-policy', 'HomeController@privacy_policy')->name('privacy_policy');
 Route::get('/terms-of-use', 'HomeController@terms_of_use')->name('terms_of_use');
 
+Route::get('register', 'SupportTeam\StudentRecordController@register')->name('students.register');
+Route::get('get_lga/{state_id}', 'AjaxController@get_lga')->name('get_lga');
 
 Route::group(['middleware' => 'auth'], function () {
 
@@ -149,7 +151,6 @@ Route::group(['middleware' => 'auth'], function () {
 
     /************************ AJAX ****************************/
     Route::group(['prefix' => 'ajax'], function() {
-        Route::get('get_lga/{state_id}', 'AjaxController@get_lga')->name('get_lga');
         Route::get('get_class_sections/{class_id}', 'AjaxController@get_class_sections')->name('get_class_sections');
         Route::get('get_class_subjects/{class_id}', 'AjaxController@get_class_subjects')->name('get_class_subjects');
     });
