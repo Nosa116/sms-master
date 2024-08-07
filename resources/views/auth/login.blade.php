@@ -50,6 +50,9 @@
 
                             <div class="form-group">
                                 <button type="submit" class="btn btn-primary btn-block">Sign in <i class="icon-circle-right2 ml-2"></i></button>
+                                <button type="button" class="btn btn-primary btn-block" onclick="window.location.href='{{ route('students.register') }}'">
+                                    Register <i class="icon-circle-right2 ml-2"></i>
+                                </button>
                             </div>
 
                            {{-- <div class="form-group">
