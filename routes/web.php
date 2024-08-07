@@ -1,7 +1,5 @@
 <?php
 
-use App\Http\Controllers\SupportTeam\StudentRecordController;
-
 Auth::routes();
 
 //Route::get('/test', 'TestController@index')->name('test');
@@ -28,10 +26,6 @@ Route::group(['middleware' => 'auth'], function () {
 
         /*************** Students *****************/
         Route::group(['prefix' => 'students'], function(){
-            Route::get('admission', 'StudentRecordController@admission')->name('students.admission');
-            Route::put('{studentRecord}/accept', 'StudentRecordController@accept')->name('students.accept');
-            Route::delete('{studentRecord}/reject', 'StudentRecordController@reject')->name('students.reject');
-
             Route::get('reset_pass/{st_id}', 'StudentRecordController@reset_pass')->name('st.reset_pass');
             Route::get('graduated', 'StudentRecordController@graduated')->name('students.graduated');
             Route::put('not_graduated/{id}', 'StudentRecordController@not_graduated')->name('st.not_graduated');
